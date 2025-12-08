@@ -13,14 +13,14 @@ try:
     graph = falkor.select_graph("shuttle_graph")
     print("FalkorDB connection successful.")
 except Exception as e:
-    print(f"❌ FalkorDB connection error: {e}")
-    print("❗ Please make sure you have run the 'redis-stack-server' command.")
+    print(f"FalkorDB connection error: {e}")
+    print("Please make sure you have run the 'redis-stack-server' command.")
 
 
 GOOGLE_MAPS_API_KEY = "AIzaSyD_QIsZIMtZX5Ph2lICBOhATH7VO9brWxg"       # Google Maps API Key
 
 if not GOOGLE_MAPS_API_KEY:
-    print("❌ No Google Maps API Key. Traffic data cannot be retrieved.")
+    print("No Google Maps API Key. Traffic data cannot be retrieved.")
     gmaps = None
 else:
     gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
@@ -65,15 +65,12 @@ def get_traffic_delay_minutes(
 
 
 class DBManager:
-
     def __init__(self):
         pass
 
     def initialize_static_data(self, stops: List[Stop], routes: List[Route]):
         if not graph: return
-
-        # STOP control and addition
-        stop_count = graph.query("MATCH (s:Stop) RETURN COUNT(s)").result_set[0][0]
+        stop_count = graph.query("MATCH (s:Stop) RETURN COUNT(s)").result_set[0][0]   # STOP control and addition
 
         if stop_count == 0:
             print("Adding stops...")
@@ -84,14 +81,12 @@ class DBManager:
                 )
             print(f"{len(stops)} stops added.")
 
-        # ROUTE control and addition
-        route_count = graph.query("MATCH (r:Route) RETURN COUNT(r)").result_set[0][0]
+        route_count = graph.query("MATCH (r:Route) RETURN COUNT(r)").result_set[0][0]  # ROUTE control and addition
 
         if route_count == 0:
             print("Adding routes...")
             for route in routes:
-                # We convert the stops_sequence list to JSON string to save it in FalkorDB
-                seq_str = json.dumps(route.stops_sequence) 
+                seq_str = json.dumps(route.stops_sequence)  # We convert the stops_sequence list to JSON string to save it in FalkorDB
                 
                 graph.query(
                     """
@@ -124,8 +119,7 @@ class DBManager:
         results = graph.query("MATCH (r:Route) RETURN r.route_id, r.name, r.stops_sequence, r.distance_km, r.direction").result_set
         routes = []
         for route_id, name, seq_str, dist, direction in results:
-             # While pulling the data from FalkorDB, we convert the JSON string back to a list
-            seq_list = json.loads(seq_str) 
+            seq_list = json.loads(seq_str)    # While pulling the data from FalkorDB, we convert the JSON string back to a list
             routes.append(
                 Route(
                     route_id=int(route_id), name=name, stops_sequence=seq_list, 
