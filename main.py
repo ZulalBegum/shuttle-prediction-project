@@ -5,8 +5,7 @@ from analysis import predict_delay, ROUTE_BASELINE_DELAY
 import random
 import os
 
-# --- 1. Statik Veri Tanımları ---
-
+# --- Static Data Definitions ---
 STOPS = [
     Stop(stop_id=1, name="Vadi Campus", lat=41.0652, lon=29.0062),
     Stop(stop_id=2, name="ANK", lat=41.0884, lon=29.0441),
