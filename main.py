@@ -18,22 +18,21 @@ STOP_MAP = {stop.stop_id: stop for stop in STOPS}
 
 ROUTES = [
     Route(route_id=101, name="Topkapı-ANK-Vadi",
-          stops_sequence=[5, 2, 1], distance_km=20, direction="inbound"),
+          stops_sequence=[5, 2, 1], distance_km=19, direction="inbound"),
     Route(route_id=102, name="Trump-ANK-Vadi", 
-          stops_sequence=[3, 2, 1], distance_km=12, direction="inbound"),
+          stops_sequence=[3, 2, 1], distance_km=6, direction="inbound"),
     Route(route_id=103, name="Kağıthane-ANK-Vadi", 
-          stops_sequence=[4, 2, 1], distance_km=7, direction="inbound"),
+          stops_sequence=[4, 2, 1], distance_km=5, direction="inbound"),
     Route(route_id=201, name="Vadi-ANK-Topkapı", 
-          stops_sequence=[1, 2, 5], distance_km=20, direction="outbound"),
+          stops_sequence=[1, 2, 5], distance_km=19, direction="outbound"),
     Route(route_id=202, name="Vadi-ANK-Trump", 
-          stops_sequence=[1, 2, 3], distance_km=12, direction="outbound"),
+          stops_sequence=[1, 2, 3], distance_km=6, direction="outbound"),
     Route(route_id=203, name="Vadi-ANK-Kağıthane", 
-          stops_sequence=[1, 2, 4], distance_km=7, direction="outbound"),
+          stops_sequence=[1, 2, 4], distance_km=5, direction="outbound"),
 ]
 
 def generate_live_location(current_stop: Stop, next_stop: Stop) -> tuple[float, float]:
-    """İki durak arasında rastgele bir canlı konum simüle eder."""
-    # ... (kod aynı kalır) ...
+    #It simulates a random live location between two stops.
     lat = (current_stop.lat + next_stop.lat) / 2 + random.uniform(-0.005, 0.005)
     lon = (current_stop.lon + next_stop.lon) / 2 + random.uniform(-0.005, 0.005)
     return (lat, lon)
@@ -71,7 +70,6 @@ def run_prediction_example(db_manager: DBManager):
     print(f"Current Passenger Count: {simulated_passenger_count}")
     
     print(f"\n--- LIVE PREDICTION ---")
-    """print(f" Predicted Delay: {prediction['net_delay_minutes']} minutes")"""
     print(f"Predicted Delay: {prediction['message']}")
     print(f"Predicted Arrival Time: {prediction['details']['predicted_arrival'].strftime('%H:%M:%S')}")
     print(f" -> Live Traffic Delay (Google Maps): {prediction['details']['live_traffic_delay']} min")
@@ -95,13 +93,13 @@ def main():
     run_prediction_example(db_manager)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     # Check for required libraries
     try:
         import falkordb
         import googlemaps
     except ImportError:
-        print("\n❌ Missing required Python libraries: falkordb and googlemaps.")
+        print("\n Missing required Python libraries: falkordb and googlemaps.")
         print("Please run the following command in your terminal: pip install falkordb googlemaps")
         exit()
         
