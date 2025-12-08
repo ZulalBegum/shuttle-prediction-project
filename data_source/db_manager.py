@@ -11,16 +11,16 @@ graph = None
 try:
     falkor = falkordb.FalkorDB(FALKORDB_URL)
     graph = falkor.select_graph("shuttle_graph")
-    print("✅ FalkorDB bağlantısı başarılı.")
+    print("FalkorDB connection successful.")
 except Exception as e:
-    print(f"❌ FalkorDB bağlantı hatası: {e}")
-    print("❗ Lütfen 'redis-stack-server' komutunu çalıştırdığınızdan emin olun.")
+    print(f"❌ FalkorDB connection error: {e}")
+    print("❗ Please make sure you have run the 'redis-stack-server' command.")
 
 
 GOOGLE_MAPS_API_KEY = "AIzaSyD_QIsZIMtZX5Ph2lICBOhATH7VO9brWxg"       # Google Maps API Key
 
 if not GOOGLE_MAPS_API_KEY:
-    print("❌ Google Maps API Key yok. Trafik verisi alınamaz.")
+    print("❌ No Google Maps API Key. Traffic data cannot be retrieved.")
     gmaps = None
 else:
     gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
@@ -31,7 +31,7 @@ def get_traffic_delay_minutes(
     destination: Tuple[float, float],
     departure_time: str = "now"
 ) -> Dict:
-                                                                       #It receives live traffic data via the Google Maps API.
+     # It receives live traffic data via the Google Maps API.
     if not gmaps:
         return {"live_time": 0.0, "baseline_time": 0.0, "traffic_delay": 0.0}
 
@@ -62,7 +62,7 @@ def get_traffic_delay_minutes(
 
     except Exception as e:
                                                          # Returning 0 in case of an error prevents the program from crashing.
-        # print(f"⚠️ Google Maps API Hatası: {e}") 
+        # print(f"Google Maps API Error: {e}") 
         return {"live_time": 0.0, "baseline_time": 0.0, "traffic_delay": 0.0}
 
 
@@ -74,7 +74,7 @@ class DBManager:
     def initialize_static_data(self, stops: List[Stop], routes: List[Route]):
         if not graph: return
 
-        # STOP kontrolü ve eklenmesi
+        # STOP control and addition
         stop_count = graph.query("MATCH (s:Stop) RETURN COUNT(s)").result_set[0][0]
 
         if stop_count == 0:
@@ -84,15 +84,15 @@ class DBManager:
                     "CREATE (:Stop {stop_id: $stop_id, name: $name, lat: $lat, lon: $lon})",
                     {"stop_id": stop.stop_id, "name": stop.name, "lat": stop.lat, "lon": stop.lon}
                 )
-            print(f"✅ {len(stops)} durak eklendi.")
+            print(f"{len(stops)} stops added.")
 
-        # ROUTE kontrolü ve eklenmesi
+        # ROUTE control and addition
         route_count = graph.query("MATCH (r:Route) RETURN COUNT(r)").result_set[0][0]
 
         if route_count == 0:
             print("Adding routes...")
             for route in routes:
-                # stops_sequence listesini FalkorDB'ye kaydetmek için JSON string'e çeviriyoruz
+                # We convert the stops_sequence list to JSON string to save it in FalkorDB
                 seq_str = json.dumps(route.stops_sequence) 
                 
                 graph.query(
@@ -111,7 +111,7 @@ class DBManager:
                         "dist": route.distance_km, "direction": route.direction
                     }
                 )
-            print(f"✅ {len(routes)} rota eklendi.")
+            print(f"{len(routes)} routes added.")
 
     def get_stops(self) -> Dict[int, Stop]:
         if not graph: return {}
@@ -126,7 +126,7 @@ class DBManager:
         results = graph.query("MATCH (r:Route) RETURN r.route_id, r.name, r.stops_sequence, r.distance_km, r.direction").result_set
         routes = []
         for route_id, name, seq_str, dist, direction in results:
-             # Veriyi FalkorDB'den çekerken JSON string'i listeye geri çeviriyoruz
+             # While pulling the data from FalkorDB, we convert the JSON string back to a list
             seq_list = json.loads(seq_str) 
             routes.append(
                 Route(

@@ -57,11 +57,11 @@ def predict_delay(
     net_delay = max(0, predicted_travel_time - time_remaining_scheduled)
     predicted_arrival = current_time + timedelta(minutes=predicted_travel_time)
 
-    # ... (Message creation logic remains the same)
+    # (Message creation logic remains the same)
     if net_delay <= 1:
         message = "Shuttle is on time."
     else:
-        # ... (Detailed message creation)
+        # (Detailed message creation)
         message = f"Shuttle {round(net_delay)} minutes late." # Simplified message
 
     return {

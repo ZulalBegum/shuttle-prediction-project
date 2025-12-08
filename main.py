@@ -51,9 +51,9 @@ def run_prediction_example(db_manager: DBManager):
 
     current_location = generate_live_location(current_stop, next_stop)
     scheduled_arrival_time = current_time + timedelta(minutes=15)
-    simulated_passenger_count = random.randint(60, 80) # Yoğunluk Simülasyonu
+    simulated_passenger_count = random.randint(60, 80) # Density Simulation
 
-    # --- TAHMİNİ ÇALIŞTIR ---
+    # --- RUN PREDICTION ---
     prediction = predict_delay(
         current_time,
         scheduled_arrival_time,
@@ -63,7 +63,7 @@ def run_prediction_example(db_manager: DBManager):
         simulated_passenger_count
     )
     
-    # --- Sonuçları Gösterme ---
+    # --- SHOW RESULTS ---
     print(f"\n--- ROUTE AND LOCATION INFORMATION ---")
     print(f"Route: {route_to_simulate.name} (ID: {route_to_simulate.route_id})")
     print(f"Shuttle CURRENTLY between: {current_stop.name} and {next_stop.name}.")
@@ -80,29 +80,29 @@ def run_prediction_example(db_manager: DBManager):
 
 
 def main():
-    # 1. Baz Gecikme Verisini Simüle Et (Scrapy'nin yerini alır)
+    # 1. Simulate Baseline Delay Data (Replaces Scrapy)
     global ROUTE_BASELINE_DELAY
     simulated_baseline_delay = {route.route_id: random.uniform(2.5, 4.5) for route in ROUTES}
     ROUTE_BASELINE_DELAY.update(simulated_baseline_delay)
     
-    # 2. DB Manager'ı başlat ve FalkorDB bağlantılarını kur
+    # 2. Initialize DB Manager and establish FalkorDB connections
     db_manager = DBManager()
     
-    # 3. Statik veriyi FalkorDB'ye kaydet
+    # 3. Save static data to FalkorDB
     db_manager.initialize_static_data(STOPS, ROUTES)
     
-    # 4. Tahmin simülasyonunu çalıştır
+    # 4. Run prediction simulation
     run_prediction_example(db_manager)
 
 
 if __name__ == "__main__":
-    # Gerekli kütüphanelerin kontrolü
+    # Check for required libraries
     try:
         import falkordb
         import googlemaps
     except ImportError:
-        print("\n❌ Gerekli Python kütüphaneleri eksik: falkordb ve googlemaps.")
-        print("Lütfen terminalde şunu çalıştırın: pip install falkordb googlemaps")
+        print("\n❌ Missing required Python libraries: falkordb and googlemaps.")
+        print("Please run the following command in your terminal: pip install falkordb googlemaps")
         exit()
         
     main()
