@@ -31,8 +31,7 @@ def get_traffic_delay_minutes(
     destination: Tuple[float, float],
     departure_time: str = "now"
 ) -> Dict:
-     # It receives live traffic data via the Google Maps API.
-    if not gmaps:
+    if not gmaps:      # It receives live traffic data via the Google Maps API.
         return {"live_time": 0.0, "baseline_time": 0.0, "traffic_delay": 0.0}
 
     try:
@@ -59,11 +58,10 @@ def get_traffic_delay_minutes(
             "baseline_time": baseline_min,
             "traffic_delay": delay
         }
-
+    
     except Exception as e:
                                                          # Returning 0 in case of an error prevents the program from crashing.
-        # print(f"Google Maps API Error: {e}") 
-        return {"live_time": 0.0, "baseline_time": 0.0, "traffic_delay": 0.0}
+        return {"live_time": 0.0, "baseline_time": 0.0, "traffic_delay": 0.0}           # print(f"Google Maps API Error: {e}") 
 
 
 class DBManager:
