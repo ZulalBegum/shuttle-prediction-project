@@ -8,19 +8,20 @@ ROUTE_BASELINE_DELAY: Dict[int, float] = {}
 def get_passenger_and_time_delay(hour: int, simulated_passenger_count: int) -> float:
     total_extra_delay = 0                        #Calculates additional delay minutes based on the time of day and passenger density.
     
-    # Peak Hours (Morning and Evening)
+    # a) Time of Day Coefficient (Peak Hours)
     if (8 <= hour < 10) or (16 <= hour < 19):
-        total_extra_delay += 10 # 10 minutes additional delay
-    
-    # Passenger Density
-    MAX_CAPACITY = 50 
+        total_extra_delay += 10
+    # Less busy hours
+    elif (10 <= hour < 13) or (19 <= hour < 21):
+        total_extra_delay += 3
+
+    MAX_CAPACITY = 50    # Passenger Density
     if simulated_passenger_count > (MAX_CAPACITY * 1.5): # More than 150%
         total_extra_delay += 5
     elif simulated_passenger_count > MAX_CAPACITY:
         total_extra_delay += 2
 
     return float(total_extra_delay)
-
 
 def predict_delay(
     current_time: datetime,
@@ -29,8 +30,7 @@ def predict_delay(
     next_stop_location: Tuple[float, float],
     route_id: int, 
     simulated_passenger_count: int
-) -> Dict:
-    #Calculates Live Service Delay Prediction.
+) -> Dict:  #Calculates Live Service Delay Prediction.
     
     # 1. Live Traffic Analysis (Google Maps API)
     traffic_data = get_traffic_delay_minutes(current_location, next_stop_location)
@@ -60,8 +60,7 @@ def predict_delay(
     # (Message creation logic remains the same)
     if net_delay <= 1:
         message = "Shuttle is on time."
-    else:
-        # (Detailed message creation)
+    else:    # (Detailed message creation)
         message = f"Shuttle {round(net_delay)} minutes late." # Simplified message
 
     return {
